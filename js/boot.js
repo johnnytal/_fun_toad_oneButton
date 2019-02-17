@@ -1,12 +1,12 @@
-window.onload = start;
+//window.onload = start;
 
 document.addEventListener("deviceready", start, false);
 document.addEventListener("pause", onPause, false);
 document.addEventListener("resume", onResume, false);
 
 function start(){ 
-    WIDTH = 800; 
-    HEIGHT = 600; 
+    WIDTH = 600; 
+    HEIGHT = 800; 
 
     game = new Phaser.Game(WIDTH, HEIGHT, Phaser.CANVAS, "game");    
       
