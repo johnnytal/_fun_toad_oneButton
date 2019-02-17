@@ -12,7 +12,9 @@ preloader.prototype = {
             font: '18px', fill: 'lightgrey', fontWeight: 'normal', align: 'center'
         });
 
-        this.game.load.spritesheet("button", "assets/images/square.png");
+        this.game.load.spritesheet("cont", "assets/images/cont.png", 814/2, 256);
+        this.game.load.spritesheet("play", "assets/images/play.png", 814/2, 256);
+
         game.load.json('media', 'http://ilyichgames.com/media.json');
     },
     
