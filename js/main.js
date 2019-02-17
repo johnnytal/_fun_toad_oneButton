@@ -35,7 +35,7 @@ gameMain.prototype = {
         
         server_sound.onStop.add(on_sound_ended, this);   
         
-        init_plugIns(); 
+        initPlugIns(); 
     }	
 };
 
