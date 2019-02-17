@@ -1,5 +1,7 @@
 var gameMain = function(game){
 	pause_mode = false;
+	
+	DEFAULT_COLOR = '#00ffff';
 };
 
 gameMain.prototype = {
@@ -7,15 +9,14 @@ gameMain.prototype = {
         var mediaJson = game.cache.getJSON('media');
 		
 		soundToPlay = mediaJson.sound;
-		bgColor = mediaJson.backgroundColor;
+		server_color = mediaJson.backgroundColor;
 
         this.game.load.audio('saraSound', 'assets/audio/' + soundToPlay + '.ogg');
 	},
 	
     create: function(){
-    	saraSound = game.add.audio('saraSound');
-    	saraSound.onStop.add(on_sound_ended, this);
-    	
+    	server_sound = game.add.audio('saraSound');
+
         play_button = this.add.image(0, 0, 'play');
         play_button.frame = 1;
         play_button.x = WIDTH / 2 - play_button.width / 2;
@@ -30,27 +31,36 @@ gameMain.prototype = {
         mode_button.frame = 1;
         
         mode_button.inputEnabled = true;
-        mode_button.events.onInputDown.add(toggle_mode, this);      
+        mode_button.events.onInputDown.add(toggle_mode, this);  
+        
+        server_sound.onStop.add(on_sound_ended, this);   
+        
+        init_plugIns(); 
     }	
 };
 
-function on_play_down(item){
-	item.frame = 0;	
-	saraSound.play();
-	game.stage.backgroundColor = bgColor;
+function on_play_down(_item){	
+	server_sound.play();
+	
+	_item.frame = 0;
+	game.stage.backgroundColor = server_color;
+	window.plugins.flashlight.switchOn();
 }
 
-function on_play_up(item){
+function on_play_up(_item){
 	if (pause_mode){
-		saraSound.stop();
-		play_button.frame = 1;
-		game.stage.backgroundColor = '#00ffff';
+		server_sound.stop();
+		
+		_item.frame = 1;
+		game.stage.backgroundColor = DEFAULT_COLOR;
+		window.plugins.flashlight.switchOff();
 	}
 }
 
 function on_sound_ended(){
 	play_button.frame = 1;
-	game.stage.backgroundColor = '#00ffff';
+	game.stage.backgroundColor = DEFAULT_COLOR;
+	window.plugins.flashlight.switchOff();
 }
 
 function toggle_mode(item){
@@ -62,4 +72,10 @@ function toggle_mode(item){
 		item.frame = 0;
 		pause_mode = true;
 	}
+}
+
+function initPlugIns(){
+    try{window.plugins.insomnia.keepAwake();} catch(e){} // keep awake
+    try{StatusBar.hide();} catch(e){} // hide status bar
+    try{window.androidVolume.setMusic(100, false);} catch(e){} // max media volume
 }
