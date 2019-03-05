@@ -35,7 +35,7 @@ gameMain.prototype = {
         mode_button.inputEnabled = true;
         mode_button.events.onInputDown.add(toggle_mode, this);  
         
-        server_sound.onStop.add(on_sound_ended, this);   
+        //server_sound.onStop.add(on_sound_ended, this);   
         
         initPlugIns(); 
     }	
@@ -52,7 +52,8 @@ function on_play_down(_item){
 
 function on_play_up(_item){
 	if (pause_mode){
-		server_sound.stop();
+		//server_sound.stop();
+		window.plugins.NativeAudio.stop('saraSound');
 		
 		_item.frame = 1;
 		game.stage.backgroundColor = DEFAULT_COLOR;
