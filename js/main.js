@@ -10,12 +10,14 @@ gameMain.prototype = {
 		
 		soundToPlay = mediaJson.sound;
 		server_color = mediaJson.backgroundColor;
+		
+    	window.plugins.NativeAudio.preloadSimple('saraSound', 'assets/audio/' + soundToPlay + '.ogg', function(msg){}, function(msg){alert(msg)});
 
-        this.game.load.audio('saraSound', 'assets/audio/' + soundToPlay + '.ogg');
+       // this.game.load.audio('saraSound', 'assets/audio/' + soundToPlay + '.ogg');
 	},
 	
     create: function(){
-    	server_sound = game.add.audio('saraSound');
+    	//server_sound = game.add.audio('saraSound');
 
         play_button = this.add.image(0, 0, 'play');
         play_button.frame = 1;
@@ -40,7 +42,8 @@ gameMain.prototype = {
 };
 
 function on_play_down(_item){	
-	server_sound.play();
+	//server_sound.play();
+	window.plugins.NativeAudio.play('saraSound');
 	
 	_item.frame = 0;
 	game.stage.backgroundColor = server_color;
