@@ -12,10 +12,17 @@ preloader.prototype = {
             font: '18px', fill: 'lightgrey', fontWeight: 'normal', align: 'center'
         });
 
-        this.game.load.spritesheet("cont", "assets/images/cont.png", 814/2, 256);
-        this.game.load.spritesheet("play", "assets/images/play.png", 814/2, 256);
-
-        game.load.json('media', 'http://ilyichgames.com/media.json');
+ 		game.load.spritesheet("cont", "assets/images/cont.png", 325/2, 102);
+        
+        game.load.image('bg', 'assets/images/bg.png');
+        
+        game.load.image('btn0', 'assets/images/btn1.png');
+        game.load.image('btn1', 'assets/images/btn2.png');
+        game.load.image('btn2', 'assets/images/btn3.png');
+        
+        game.load.audio("note1", "assets/audio/note1.mp3");
+        game.load.audio("note2", "assets/audio/note2.mp3");
+        game.load.audio("note3", "assets/audio/note3.mp3");
     },
     
     create: function(){

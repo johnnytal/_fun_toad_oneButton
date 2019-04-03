@@ -1,85 +1,112 @@
 var gameMain = function(game){
-	pause_mode = false;
+	SOUND_BUTTONS_N = 3; // number of buttons (duh)
 	
-	DEFAULT_COLOR = '#00ffff';
+	gate_mode = false; 
+	// true - the sound will stop playing once we stop pressing the button (to play the full sound we need to keep pressing)
+	// fasle - once we press the button the sound will keep playing till it is finished.
+	
+	stop_mode = true;
+	// true - if we press a working button it will stop the audio
+	// fasle - there is no way to stop the audio once we start it (unless we are in gate_mode)
+	
+	soundButtons = [];
 };
 
 gameMain.prototype = {
-	preload: function(){
-        var mediaJson = game.cache.getJSON('media');
-		
-		soundToPlay = mediaJson.sound;
-		server_color = mediaJson.backgroundColor;
-		
-    	window.plugins.NativeAudio.preloadSimple('saraSound', 'assets/audio/' + soundToPlay + '.ogg', function(msg){}, function(msg){alert(msg)});
-
-       // this.game.load.audio('saraSound', 'assets/audio/' + soundToPlay + '.ogg');
-	},
-	
     create: function(){
-    	//server_sound = game.add.audio('saraSound');
+    	game.stage.backgroundColor = '#ff2256';
+    	
+    	game.add.image(0, 0, 'bg').alpha = 0.4;
 
-        play_button = this.add.image(0, 0, 'play');
-        play_button.frame = 1;
-        play_button.x = WIDTH / 2 - play_button.width / 2;
-        play_button.y = HEIGHT / 2 - play_button.height / 2;
-        
-        play_button.inputEnabled = true;
-        play_button.events.onInputDown.add(on_play_down, this);
-        play_button.events.onInputUp.add(on_play_up, this);
-        
-        mode_button = this.add.image(0, 0, 'cont');
-        mode_button.scale.set(.5, .5);
+    	createSoundBtns();
+
+    	game.input.addPointer(); // to allow more than 2 buttons pressed simultaneously, add more pointers for more buttons
+
+        mode_button = this.add.image(0, 0, 'cont'); // that's the gate_mode on/off button, probably unnecessary in the final version
         mode_button.frame = 1;
+        mode_button.y = HEIGHT - mode_button.height;
+        mode_button.x = WIDTH - mode_button.width - 50;
         
         mode_button.inputEnabled = true;
-        mode_button.events.onInputDown.add(toggle_mode, this);  
-        
-        //server_sound.onStop.add(on_sound_ended, this);   
-        
-        initPlugIns(); 
+        mode_button.events.onInputDown.add(toggle_mode, this);
+
+    	loadSounds();
+    	initPlugIns();
     }	
 };
 
-function on_play_down(_item){	
-	//server_sound.play();
-	window.plugins.NativeAudio.play('saraSound');
+function createSoundBtns(){        
+    soundBtnsGroup = game.add.physicsGroup(Phaser.Physics.ARCADE);
+	        
+    for(b = 0; b < SOUND_BUTTONS_N; b++){
+    	soundButtons[b] = soundBtnsGroup.create(28 + (220 * b), 50, 'btn' + b);
+    	soundButtons[b].inputEnabled = true;
+
+		soundButtons[b].events.onInputDown.add(playSound, this);
+        soundButtons[b].events.onInputUp.add(function(){
+            if (gate_mode) stopSounds();
+        }, this);  
+    }
+}
+
+function playSound(item, kb){	
 	
-	_item.frame = 0;
-	game.stage.backgroundColor = server_color;
-	window.plugins.flashlight.switchOn();
-}
+	var place = soundButtons.indexOf(item);
+	var sprite = soundButtons[place];
+	var sound = sounds[place];
 
-function on_play_up(_item){
-	if (pause_mode){
-		//server_sound.stop();
-		window.plugins.NativeAudio.stop('saraSound');
+    if (!sound.isPlaying){
+        if (!sound.paused){
+            sound.play();  
+            navigator.vibrate(200);  
+        }
+        else{
+            sound.resume();
+        }
 		
-		_item.frame = 1;
-		game.stage.backgroundColor = DEFAULT_COLOR;
-		window.plugins.flashlight.switchOff();
-	}
+		sprite.frame = 1;
+        sprite.tint = 0xe3dfff;
+        
+        sound.onStop.add(function(){
+           sprite.frame = 0;
+           sprite.tint = 0xffffff;
+        }, this);
+    }
+    
+    else{
+    	if (stop_mode){
+        	sound.stop();
+        }
+    }    
 }
 
-function on_sound_ended(){
-	play_button.frame = 1;
-	game.stage.backgroundColor = DEFAULT_COLOR;
-	window.plugins.flashlight.switchOff();
+function stopSounds(){
+    for (n = 0; n < sounds.length; n++){
+        sounds[n].stop();
+    }   
 }
 
 function toggle_mode(item){
 	if (item.frame == 0){
 		item.frame = 1;
-		pause_mode = false;
+		gate_mode = false;
 	}	
 	else{
 		item.frame = 0;
-		pause_mode = true;
+		gate_mode = true;
 	}
 }
 
 function initPlugIns(){
-    try{window.plugins.insomnia.keepAwake();} catch(e){} // keep awake
+    try{window.plugins.insomnia.keepAwake();} catch(e){} // keep device awake
     try{StatusBar.hide();} catch(e){} // hide status bar
-    try{window.androidVolume.setMusic(100, false);} catch(e){} // max media volume
+    try{window.androidVolume.setMusic(100, false);} catch(e){} // change device media volume to maximum
+}
+
+function loadSounds(){
+	sounds = [
+	    sfx1 = game.add.audio('note1', 0.5),
+	    sfx2 = game.add.audio('note2', 0.5),
+	    sfx3 = game.add.audio('note3', 0.5)
+    ];
 }
