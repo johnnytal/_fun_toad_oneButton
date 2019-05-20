@@ -5,7 +5,7 @@ var gameMain = function(game){
 	// true - the sound will stop playing once we stop pressing the button (to play the full sound we need to keep pressing)
 	// fasle - once we press the button the sound will keep playing till it is finished.
 	
-	stop_mode = true;
+	stop_mode = false;
 	// true - if we press a working button it will stop the audio
 	// fasle - there is no way to stop the audio once we start it (unless we are in gate_mode)
 	
@@ -55,29 +55,25 @@ function playSound(item, kb){
 	var sprite = soundButtons[place];
 	var sound = sounds[place];
 
-    if (!sound.isPlaying){
-        if (!sound.paused){
-            sound.play();  
-            navigator.vibrate(200);  
-        }
-        else{
-            sound.resume();
-        }
-		
-		sprite.frame = 1;
-        sprite.tint = 0xe3dfff;
-        
-        sound.onStop.add(function(){
-           sprite.frame = 0;
-           sprite.tint = 0xffffff;
-        }, this);
+    if (!sound.paused){
+        sound.play();  
+        navigator.vibrate(200);  
     }
-    
     else{
-    	if (stop_mode){
-        	sound.stop();
-        }
-    }    
+        sound.resume();
+    }
+	
+	sprite.frame = 1;
+    sprite.tint = 0xe3dfff;
+    
+    sound.onStop.add(function(){
+       sprite.frame = 0;
+       sprite.tint = 0xffffff;
+    }, this);
+
+	if (stop_mode){
+    	sound.stop();
+    }   
 }
 
 function stopSounds(){
@@ -105,8 +101,8 @@ function initPlugIns(){
 
 function loadSounds(){
 	sounds = [
-	    sfx1 = game.add.audio('note1', 0.5),
-	    sfx2 = game.add.audio('note2', 0.5),
-	    sfx3 = game.add.audio('note3', 0.5)
+	    sfx1 = game.add.audio('note1', 1),
+	    sfx2 = game.add.audio('note2', 1),
+	    sfx3 = game.add.audio('note3', 1)
     ];
 }
